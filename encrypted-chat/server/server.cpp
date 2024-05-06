@@ -11,6 +11,18 @@
 
 using namespace std;
 
+Server::Server() {
+	this->initServer();
+}
+
+Server::~Server() {
+	cout << "destructing server" << endl;
+}
+
+void Server::initServer() {
+	cout << "hello world" << endl;
+}
+
 int main()
 {
 	//------------------------------------------------------------------------------
@@ -45,9 +57,20 @@ int main()
 	int clientSocket = accept(serverSocket, nullptr, nullptr);
 
 	// Receive data from client
-	char buffer[1024] = {0};
-	recv(clientSocket, buffer, sizeof(buffer), 0);
-	cout << "Client sent: " << buffer << endl;
+	while (1) {
+		char buffer[1024] = {0};
+		int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
+		if (bytesReceived == 0) {
+			cout << "Client disconnected!" << endl;
+			break;
+		}
+		if (bytesReceived < 0) {
+			cout << "Error receiving data from client!" << endl;
+			break;
+		}
+		// Successfully received data from client
+		cout << "Client sent: " << buffer << endl;
+	}
 
 	close(serverSocket);
 }

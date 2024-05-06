@@ -13,8 +13,8 @@ using namespace std;
 
 int main() {
     //------------------------------------------------------------------------------
-	// Initialize client socket and connect to server
-	//------------------------------------------------------------------------------
+    // Initialize client socket and connect to server
+    //------------------------------------------------------------------------------
     int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
 
     sockaddr_in serverAddress;
@@ -26,6 +26,14 @@ int main() {
 
     const char* message = "hello world";
     send(clientSocket, message, strlen(message), 0);
+
+    while (1) {
+        // Read in user input from command line and store in variable
+        string message;
+        getline(cin, message);
+        char* convertedMessage = message.data();
+        send(clientSocket, convertedMessage, strlen(convertedMessage), 0);
+    }
 
     close(clientSocket);
 }
