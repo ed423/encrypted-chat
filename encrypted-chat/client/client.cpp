@@ -6,10 +6,45 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
+#include <thread>
 
 #include "../server/server.h"
 
 using namespace std;
+
+//------------------------------------------------------------------------------
+// Receive data from server
+//------------------------------------------------------------------------------
+void recvData(int clientSocket) {
+    while (1) {
+        char buffer[1024] = {0};
+	    int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
+
+	    if (bytesReceived == 0) {
+		    cout << "client.cpp::recvData(): Client disconnected!" << endl;
+		    break;
+	    }
+
+	    if (bytesReceived < 0) {
+	    	cout << "client.cpp::recvData(): Error connecting to server!" << endl;
+    		break;
+    	}
+
+        cout << "client.cpp::recvData(): Server says: " << buffer << endl;
+    }
+}
+
+//------------------------------------------------------------------------------
+// Read in user input from command line and send to server
+//------------------------------------------------------------------------------
+void sendData(int clientSocket) {
+    while (1) {
+        string message;
+        getline(cin, message);
+        char* convertedMessage = message.data();
+        send(clientSocket, convertedMessage, strlen(convertedMessage), 0);
+    }
+}
 
 int main() {
     //------------------------------------------------------------------------------
@@ -24,28 +59,14 @@ int main() {
 
     connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
 
-    const char* message = "hello world";
-    send(clientSocket, message, strlen(message), 0);
+    // Spawn two separate threads for reading and writing
+    thread recvThread(recvData, clientSocket);
+    thread sendThread(sendData, clientSocket);
 
-    while (1) {
-        char buffer[1024] = {0};
-		int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
-		if (bytesReceived == 0) {
-			cout << "Client disconnected!" << endl;
-			break;
-		}
-		if (bytesReceived < 0) {
-			cout << "Error receiving data from client!" << endl;
-			break;
-		}
-        cout << "Server says: " << buffer << endl;
+    sendThread.join();
 
-        // Read in user input from command line and store in variable
-        string message;
-        getline(cin, message);
-        char* convertedMessage = message.data();
-        send(clientSocket, convertedMessage, strlen(convertedMessage), 0);
-    }
+    // Detach as recvThread might block, but we still want to be able to send even if recvThread blocks
+    recvThread.detach();
 
     close(clientSocket);
 }

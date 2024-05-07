@@ -6,6 +6,8 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
+#include <thread>
+#include <chrono>
 
 #include "server.h"
 
@@ -39,7 +41,7 @@ int main()
 		throw runtime_error("server.cpp::main(): Unable to allocate file descriptor when attempting to initialize socket");
 	}
 	else {
-		cout << "Connection established, file descriptor: " << serverSocket << endl;
+		cout << "server.cpp::main(): Connection established, file descriptor: " << serverSocket << endl;
 	}
 
 	sockaddr_in serverAddress;
@@ -61,15 +63,15 @@ int main()
 		char buffer[1024] = {0};
 		int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
 		if (bytesReceived == 0) {
-			cout << "Client disconnected!" << endl;
+			cout << "server.cpp::main(): Client disconnected!" << endl;
 			break;
 		}
 		if (bytesReceived < 0) {
-			cout << "Error receiving data from client!" << endl;
-			break;
+			// Received no data (client may not be connected yet), try again
+			continue;
 		}
 		// Successfully received data from client
-		cout << "Client sent: " << buffer << endl;
+		cout << "server.cpp::main(): Client sent: " << buffer << endl;
 		// Echo data back to client
 		send(clientSocket, buffer, strlen(buffer), 0);
 	}
