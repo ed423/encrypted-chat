@@ -70,6 +70,8 @@ int main()
 		}
 		// Successfully received data from client
 		cout << "Client sent: " << buffer << endl;
+		// Echo data back to client
+		send(clientSocket, buffer, strlen(buffer), 0);
 	}
 
 	close(serverSocket);

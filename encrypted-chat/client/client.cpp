@@ -28,6 +28,18 @@ int main() {
     send(clientSocket, message, strlen(message), 0);
 
     while (1) {
+        char buffer[1024] = {0};
+		int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
+		if (bytesReceived == 0) {
+			cout << "Client disconnected!" << endl;
+			break;
+		}
+		if (bytesReceived < 0) {
+			cout << "Error receiving data from client!" << endl;
+			break;
+		}
+        cout << "Server says: " << buffer << endl;
+
         // Read in user input from command line and store in variable
         string message;
         getline(cin, message);
