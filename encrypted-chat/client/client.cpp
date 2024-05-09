@@ -41,7 +41,7 @@ void sendData(int clientSocket) {
     while (1) {
         string message;
         getline(cin, message);
-        char* convertedMessage = message.data();
+        const char* convertedMessage = message.data();
         send(clientSocket, convertedMessage, strlen(convertedMessage), 0);
     }
 }
