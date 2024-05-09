@@ -21,7 +21,7 @@ void recvData(int clientSocket) {
 	    int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
 
 	    if (bytesReceived == 0) {
-		    cout << "client.cpp::recvData(): Client disconnected!" << endl;
+		    cout << "client.cpp::recvData(): Server disconnected!" << endl;
 		    break;
 	    }
 
