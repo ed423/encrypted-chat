@@ -26,120 +26,105 @@ void Server::initServer() {
 	std::cout << "hello world" << std::endl;
 }
 
-int main()
-{
+
+int main() {
 	//------------------------------------------------------------------------------
 	// Initialize socket and block until a client connects
 	//------------------------------------------------------------------------------
 
-	// Create TCP socket
-	int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+	// create a socket
 
-	if (serverSocket == -1)
-	{
-		std::cerr << "server.cpp::main(): socket() threw an error with code: " << strerror(errno) << std::endl;
+	// bind - a socket involves associating a specific address (IP address and port number) with a socket
 
-		throw std::runtime_error("server.cpp::main(): Unable to allocate file descriptor when attempting to initialize socket");
-	}
-	else {
-		std::cout << "server.cpp::main(): Connection established, file descriptor: " << serverSocket << std::endl;
-	}
+	// initialize to handle inputs from server_socketfd
+	// listen
+	// FD_ZERO
+	// FD_SET
 
-	sockaddr_in serverAddress;
-	serverAddress.sin_family = AF_INET;
-	serverAddress.sin_port = htons(SERVER_PORT);
-	serverAddress.sin_addr.s_addr = INADDR_ANY;
-	// cout << "SERVER_PORT: " << SERVER_PORT << endl;
+	// poll for clients and requests
+	// while(1) {
+		// ...
+		// select() <- research what this does
 
-	bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
-	
-	listen(serverSocket, 5);
+		// for loop
 
-	// Creates a new socket and returns a unique FD to communicate with an individual client
-	std::cout << "server.cpp::main(): Waiting for client connection... " << std::endl;
 
-	int serverAddressLen = sizeof(struct sockaddr_in);
-	// int clientSocket = accept(serverSocket, nullptr, nullptr);
-	int clientSocket = accept(serverSocket, (struct sockaddr *)&serverAddress,(socklen_t *)&serverAddressLen);
-	if (clientSocket < 0) {
-		perror("Accept connection");
-	}
-	std::cout << "server.cpp::main(): client accepted" << std::endl;
+			// check if activity is on the server's socket fd = connection request
+			// handle requests
+			// connection request handler
+				// we accept the client here and add the clients fd to the descriptor set
 
-	//--------------------------------------
-	// Receive data from client and echos
-	//--------------------------------------
-	while (1) {
-        // cout << "server.cpp::main(): while" << endl;
-		char buffer[1024] = {0};
-		int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
-		if (bytesReceived == 0) {
-			std::cout << "server.cpp::main(): Client disconnected!" << std::endl;
-			break;
-		}
-		if (bytesReceived < 0) {
-			// Received no data (client may not be connected yet), try again
-			continue;
-		}
-		// Successfully received data from client
-		std::cout << "server.cpp::main(): Client sent: " << buffer << std::endl;
-		// Echo data back to client
-		send(clientSocket, buffer, sizeof(buffer), 0);
-	}
+			// else if (...)
+				// messages... POO!
 
-	close(serverSocket);
+			// poohaps handle disconnection stuffs peehead
+	// }
 }
 
-// //==========
-// // test
-// //==========
-// #include <iostream>
-// #include <cstdio>
-// #include <cstdlib>
-// #include <cstring>
-// #include <unistd.h>
-// #include <arpa/inet.h>
-// #include <sys/socket.h>
 
+// int main()
+// {
+// 	//------------------------------------------------------------------------------
+// 	// Initialize socket and block until a client connects
+// 	//------------------------------------------------------------------------------
 
+// 	// Create TCP socket
+// 	int server_socketfd = socket(AF_INET, SOCK_STREAM, 0);
 
-// const int SERVER_PORT = 12345; // Port number for the server
+// 	if (server_socketfd == -1)
+// 	{
+// 		std::cerr << "server.cpp::main(): socket() threw an error with code: " << strerror(errno) << std::endl;
 
-// int main() {
-//     int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
-//     if (serverSocket == -1) {
-//         perror("Socket creation failed");
-//         exit(EXIT_FAILURE);
-//     }
+// 		throw std::runtime_error("server.cpp::main(): Unable to allocate file descriptor when attempting to initialize socket");
+// 	}
+// 	else {
+// 		std::cout << "server.cpp::main(): Connection established, file descriptor: " << server_socketfd << std::endl;
+// 	}
 
-//     sockaddr_in serverAddr;
-//     serverAddr.sin_family = AF_INET;
-//     serverAddr.sin_addr.s_addr = INADDR_ANY;
-//     serverAddr.sin_port = htons(SERVER_PORT);
+// 	sockaddr_in serverAddress;
+// 	serverAddress.sin_family = AF_INET;
+// 	serverAddress.sin_port = htons(SERVER_PORT);
+// 	serverAddress.sin_addr.s_addr = INADDR_ANY;
+// 	// cout << "SERVER_PORT: " << SERVER_PORT << endl;
 
-// 	bind(serverSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr));
+// 	bind(server_socketfd, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
+	
 
-//     if (listen(serverSocket, 5) < 0) {
-//         perror("Listen failed");
-//         exit(EXIT_FAILURE);
-//     }
+// 	// Create a connection queue and initialize readfds to handle input from server_sockfd.
+// 	listen(server_socketfd, 5);
 
-//     std::cout << "Server listening on port " << SERVER_PORT << std::endl;
+// 	// Creates a new socket and returns a unique FD to communicate with an individual client
+// 	std::cout << "server.cpp::main(): Waiting for client connection... " << std::endl;
 
-//     int clientSocket;
-//     sockaddr_in clientAddr;
-//     socklen_t clientAddrLen = sizeof(clientAddr);
+// 	int serverAddressLen = sizeof(struct sockaddr_in);
+// 	// int clientSocket = accept(server_socketfd, nullptr, nullptr);
+// 	int clientSocket = accept(server_socketfd, (struct sockaddr *)&serverAddress,(socklen_t *)&serverAddressLen);
+// 	if (clientSocket < 0) {
+// 		perror("Accept connection");
+// 	}
+// 	std::cout << "server.cpp::main(): client accepted" << std::endl;
 
-//     clientSocket = accept(serverSocket, (struct sockaddr*)&clientAddr, &clientAddrLen);
-//     if (clientSocket < 0) {
-//         perror("Accept failed");
-//         exit(EXIT_FAILURE);
-//     }
+// 	//--------------------------------------
+// 	// Receive data from client and echos
+// 	//--------------------------------------
+// 	while (1) {
+//         // cout << "server.cpp::main(): while" << endl;
+// 		char buffer[1024] = {0};
+// 		int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
+// 		if (bytesReceived == 0) {
+// 			std::cout << "server.cpp::main(): Client disconnected!" << std::endl;
+// 			break;
+// 		}
+// 		if (bytesReceived < 0) {
+// 			// Received no data (client may not be connected yet), try again
+// 			continue;
+// 		}
 
-//     std::cout << "Connection accepted from " << inet_ntoa(clientAddr.sin_addr) << ":" << ntohs(clientAddr.sin_port) << std::endl;
+// 		// Successfully received data from client
+// 		std::cout << "server.cpp::main(): Client sent: " << buffer << std::endl;
+// 		// Echo data back to client
+// 		send(clientSocket, buffer, sizeof(buffer), 0);
+// 	}
 
-//     close(clientSocket);
-//     close(serverSocket);
-
-//     return 0;
+// 	close(server_socketfd);
 // }

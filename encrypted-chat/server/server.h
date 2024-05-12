@@ -1,9 +1,9 @@
 #pragma once
 #include <set>
 
-using namespace std;
+// using namespace std;
 
-#define SERVER_PORT 2000
+#define SERVER_PORT 12345
 
 class Server {
 
@@ -14,5 +14,5 @@ public:
 
 private:
     // Set of known users IDs
-    set<int> users;
+    std::set<int> users;
 };
