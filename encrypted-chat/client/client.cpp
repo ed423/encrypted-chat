@@ -8,7 +8,7 @@
 #include <netinet/ip.h>
 #include <thread>
 
-#include "../server/server.h"
+#include "../shared/util.h"
 
 // const int SERVER_PORT = 12345; // Port number for the server
 
