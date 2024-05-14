@@ -15,7 +15,7 @@ enum Operation {
     // OPERATION_JOIN_SESSION,
 };
 
-string getOperationName(Operation op);
+std::string getOperationName(Operation op);
 // example use: Operation op = OPERATION_SEND_MSG; if (op == OPERATION_SEND_MSG) {...}
 
 struct header {
