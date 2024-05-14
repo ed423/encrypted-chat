@@ -15,6 +15,13 @@
 // using namespace std;
 // const int SERVER_PORT = 7000; // Port number for the server
 
+void reset_fd_sets(fd_set *read_fds, fd_set *write_fds, fd_set *except_fds, int server_socketfd) {
+	FD_ZERO(read_fds);
+	FD_ZERO(write_fds);
+	FD_ZERO(except_fds);
+
+	FD_SET(server_socketfd, read_fds); // add server's listen socket fd to fd set
+}
 
 int main() {
 	//------------------------------------------------------------------------------
@@ -33,24 +40,58 @@ int main() {
 	serverAddress.sin_port = htons(SERVER_PORT);
 	serverAddress.sin_addr.s_addr = INADDR_ANY;
 
+	// keeps track of connected clients' fds
+	std::vector<int> client_sockets;
+
 	// bind - a socket involves associating a specific address (IP address and port number) with a socket
 	bind(server_socketfd, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
 
 	// initialize to handle inputs from server_socketfd
 	listen(server_socketfd, 5);
-	FD_ZERO(&read_fds); // clears a fd set
-  	FD_SET(server_socketfd, &read_fds); // adds a fd to the set
+	// FD_ZERO(&read_fds); // clears a fd set
+  	// FD_SET(server_socketfd, &read_fds); // adds a fd to the set
+
+
+	std::cout << "server.cpp::main(): Waiting for client connections..." << std::endl;
 
 	// poll for clients and requests
 	while(1) {
+		// reset_fd_sets(&read_fds, &write_fds, &except_fds, server_socketfd);
+
+		FD_ZERO(&read_fds); // clears a fd set
+  		FD_SET(server_socketfd, &read_fds); // adds a fd to the set
+
+		// highest monitored fd number
+		int max_fds = server_socketfd;
+
+		// update max fd value by checking how many clients are connected
+		for (int client_socket : client_sockets) {
+            FD_SET(client_socket, &read_fds);
+            if (client_socket > max_fds) {
+                max_fds = client_socket;
+            }
+        }
+
 		// ...
-		// select() <- research what this does - monitors multiple file descriptors, waits till one or more fds become ready for operations
+		// select() <- research what this does - monitors multiple file descriptors,
+		// waits till one or more fds become ready for operations
 		// int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout);
 		// FD_SETSIZE = max num file descriptors in a fd_set
-		int result = select(FD_SETSIZE, &read_fds, &write_fds, &except_fds, NULL);
-		// for loop
-		for (int i = 0; i < FD_SETSIZE; i++) {
+		int result = select(max_fds + 1, &read_fds, &write_fds, &except_fds, NULL);
 
+		switch(result) {
+			case -1:
+				std::cerr << "server.cpp::main(): select() error! Returned: " << result << std::endl;
+			case 0:
+				std::cerr << "server.cpp::main(): select() timed out, returned " << result << std::endl;
+			default:
+				std::cout << "server.cpp::main(): select() returned: " << result << std::endl;
+		}
+		// for loop to see which fd has waiting connection
+		for (int i = 0; i < FD_SETSIZE; i++) {
+			if (FD_ISSET(i, &read_fds) != 0) {
+				std::cout << "server.cpp::main(): fd " << i << " is ready to connect" << std::endl;
+			}
 		}
 
 			// check if activity is on the server's socket fd = connection request
