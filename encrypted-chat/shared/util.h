@@ -17,3 +17,8 @@ enum Operation {
 
 std::string getOperationName(Operation op);
 // example use: Operation op = OPERATION_SEND_MSG; if (op == OPERATION_SEND_MSG) {...}
+
+enum ResultCodes { // for response packets (use fail, success only for now)
+    FAIL,
+    SUCCESS,
+};
