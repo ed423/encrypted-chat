@@ -4,7 +4,15 @@
 
 class RequestPacket {
 private:
-    header *hdr;
+    // struct header {
+    //     int user_id;
+    //     Operation op_id;
+    //     int data_len;
+    //     bool result; // only used for response packet
+    // };
+    // header *hdr;
+
+    uint8_t 
     unsigned char *data;
 
 public:

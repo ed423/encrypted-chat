@@ -17,10 +17,3 @@ enum Operation {
 
 std::string getOperationName(Operation op);
 // example use: Operation op = OPERATION_SEND_MSG; if (op == OPERATION_SEND_MSG) {...}
-
-struct header {
-    int user_id;
-    Operation op_id;
-    int data_len;
-    bool result; // only used for response packet
-};
