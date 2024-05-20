@@ -11,9 +11,24 @@
 #include <chrono>
 
 #include "../shared/util.h"
+#include "../shared/packet_protocol.h"
 
 // using namespace std;
 // const int SERVER_PORT = 7000; // Port number for the server
+
+//------------------------------------------------------------------------------
+// Receive a message (request_packet object)
+//------------------------------------------------------------------------------
+RequestPacket* receiveRequest(char *buffer) {
+	return NULL;
+}
+
+//------------------------------------------------------------------------------
+// Send a response (response_packet object)
+//------------------------------------------------------------------------------
+int sendResponse(RequestPacket *request_packet) {
+	return -1;
+}
 
 //------------------------------------------------------------------------------
 // Reset flags in fd sets
