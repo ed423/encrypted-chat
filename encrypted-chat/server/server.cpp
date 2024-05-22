@@ -17,20 +17,6 @@
 // const int SERVER_PORT = 7000; // Port number for the server
 
 //------------------------------------------------------------------------------
-// Receive a message (request_packet object)
-//------------------------------------------------------------------------------
-RequestPacket* receiveRequest(char *buffer) {
-	return NULL;
-}
-
-//------------------------------------------------------------------------------
-// Send a response (response_packet object)
-//------------------------------------------------------------------------------
-int sendResponse(RequestPacket *request_packet) {
-	return -1;
-}
-
-//------------------------------------------------------------------------------
 // Reset flags in fd sets
 //------------------------------------------------------------------------------
 void reset_fd_sets(fd_set *read_fds, fd_set *write_fds, fd_set *except_fds, int server_socketfd) {
@@ -136,7 +122,7 @@ int main() {
 				std::cout << "server.cpp::main(): client on fd " << i << " has sent a message" << std::endl;
 
 				// receive data from client
-				char buffer[1024] = {0};
+				char buffer[MAX_PACKET_SIZE] = {0};
 				int bytesReceived = recv(i, buffer, sizeof(buffer), 0);
 
 				if (bytesReceived == 0) {
