@@ -361,3 +361,10 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+
+.vscode/
+encrypted-chat/client/client
+encrypted-chat/server/server
+encrypted-chat/test/packet_protocol.o
+encrypted-chat/test/test
