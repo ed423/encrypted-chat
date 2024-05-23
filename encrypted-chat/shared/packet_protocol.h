@@ -15,7 +15,9 @@ private:
     uint16_t data_len; // use the full 16 bits to make the data offset easier. we send over the header size + data_len
     uint8_t *data;
 
-    int field_offsets[5] = { 0, 26, 31, 39, 55 };
+    // int field_offsets[5] = { 0, 26, 31, 39, 55 };
+
+    int field_offsets[5] = { 0, 27, 32, 40, 56 };
 
     void initPacket(uint32_t user_id, uint8_t op_id, uint8_t result, uint16_t data_len, uint8_t *data);
 

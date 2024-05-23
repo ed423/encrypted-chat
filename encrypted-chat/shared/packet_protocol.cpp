@@ -2,9 +2,9 @@
 #include <iomanip>
 #include <cstring>
 
-using namespace std;
-
 #include "packet_protocol.h"
+
+using namespace std;
 
 /**
  * Default Constructor
