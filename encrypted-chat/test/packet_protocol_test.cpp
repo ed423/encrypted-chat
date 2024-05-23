@@ -2,7 +2,7 @@
 #include "../shared/packet_protocol.h"
 
 // bad, remove later
-// #include "../shared/packet_protocol.cpp"
+#include "../shared/packet_protocol.cpp"
 
 using namespace std;
 
