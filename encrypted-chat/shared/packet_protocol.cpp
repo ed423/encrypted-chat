@@ -86,6 +86,11 @@ void PacketProtocol::setPacket(unsigned char *data) {
     memcpy(packet, data, MAX_PACKET_SIZE);
 }
 
+void PacketProtocol::setPktField(uint32_t val, int numBits, int actualOffset) {
+    // 1. Get the index of the packet array (block) that we want to start filling at
+    // 2. 
+}
+
 //-------------------
 // setters
 //-------------------

@@ -39,6 +39,7 @@ public:
     void setResult(uint8_t);
     void setDataLen(uint16_t);
     void setData(uint16_t, unsigned char *);
+    void setPktField(uint32_t val, int numBits, int actualOffset);
     
     uint32_t getUserId();
     uint8_t getOpId();
