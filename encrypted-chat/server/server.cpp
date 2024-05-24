@@ -13,6 +13,9 @@
 #include "../shared/util.h"
 #include "../shared/packet_protocol.h"
 
+// Bad, fix later
+#include "../shared/packet_protocol.cpp"
+
 // using namespace std;
 // const int SERVER_PORT = 7000; // Port number for the server
 
@@ -123,7 +126,9 @@ int main() {
 
 				// receive data from client
 				char buffer[MAX_PACKET_SIZE] = {0};
-				int bytesReceived = recv(i, buffer, sizeof(buffer), 0);
+				PacketProtocol receivedPacket{};
+				// int bytesReceived = recv(i, buffer, sizeof(buffer), 0);
+				int bytesReceived = recv(i, receivedPacket.packet, MAX_PACKET_SIZE, 0);
 
 				if (bytesReceived == 0) {
 					std::cout << "server.cpp::main(): Client disconnected!" << std::endl;
@@ -142,9 +147,14 @@ int main() {
 				}
 
 				// Successfully received data from client
-				std::cout << "server.cpp::main(): Client sent: " << buffer << std::endl;
+				// std::cout << "server.cpp::main(): Client sent: " << buffer << std::endl;
+				std::cout << "server.cpp::main(): Received buffer from client " << std::endl;
+
+				receivedPacket.parsePacket();
+				string parsedData = receivedPacket.parseData(receivedPacket.getDataLen(), receivedPacket.getData());
+
 				// Echo data back to client
-				send(i, buffer, sizeof(buffer), 0);
+				send(i, parsedData.data(), parsedData.length(), 0);
 			}
 		}
 	}

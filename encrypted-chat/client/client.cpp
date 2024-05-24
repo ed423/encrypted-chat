@@ -9,6 +9,10 @@
 #include <thread>
 
 #include "../shared/util.h"
+#include "../shared/packet_protocol.h"
+
+// Bad, fix later
+#include "../shared/packet_protocol.cpp"
 
 // const int SERVER_PORT = 12345; // Port number for the server
 
@@ -42,8 +46,13 @@ void sendData(int clientSocket) {
     while (1) {
         std::string message;
         getline(std::cin, message);
-        const char* convertedMessage = message.data();
-        send(clientSocket, convertedMessage, sizeof(convertedMessage), 0);
+        char* stringAsChar = new char[message.size() + 1];
+        std::strcpy(stringAsChar, message.c_str());
+
+        uint8_t *messageToSend = reinterpret_cast<uint8_t*>(stringAsChar);
+
+        PacketProtocol packetToSend{999999, 5, 0, static_cast<uint16_t>(message.length()), messageToSend};
+        send(clientSocket, packetToSend.packet, sizeof(packetToSend.packet), 0);
     }
 }
 
@@ -63,8 +72,12 @@ int main() {
     serverAddress.sin_addr.s_addr = INADDR_ANY;
     // cout << "SERVER_PORT: " << SERVER_PORT << endl;
 
-    connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
-    // cout << "CONNECTED" << endl;
+    int connection = connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
+    if (connection == 0) {
+        cout << "CONNECTED" << endl;
+    } else {
+        cout << "FAILED TO CONNECT TO SERVER" << endl;
+    }
 
     // Spawn two separate threads for reading and writing
     std::thread recvThread(recvData, clientSocket);
