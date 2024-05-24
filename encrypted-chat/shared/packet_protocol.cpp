@@ -43,9 +43,7 @@ void PacketProtocol::initPacket(uint32_t user_id, uint8_t op_id, uint8_t result,
 }
 
 /**
- * used for parsing received packets; we use this instead of the setters since here we don't want to change the contents of the packet array, we only extract the fields from it.
- * we have already read in the buffer at this point and stored it in pkt_protocol->packet using read(pkt_protocol->packet, num_bytes) and then we call parsePacket() to extract the fields.
- * user_id = 27 bits, op_id = 5 bits, result = 8 bits, data_len = 16 bits
+ * Parses values from a Packet array and sets member fields accordingly.
 */
 void PacketProtocol::parsePacket() {
     // TODO: merge with setPacket()?
@@ -56,6 +54,9 @@ void PacketProtocol::parsePacket() {
     this->data = &packet[7];
 }
 
+/**
+ * Helper function to print packet values in the console.
+*/
 void PacketProtocol::dumpPacket() {
     cout << "\n//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
     cout << "   PacketProtocol:\n"
@@ -69,9 +70,9 @@ void PacketProtocol::dumpPacket() {
 }
 
 /**
- * parses a message given a pointer to its first character, for a given number of bytes
- * @param data_len ...
- * @param data ...
+ * Parses a message given a pointer to its first character, for a given number of bytes
+ * @param data_len Length of data to read.
+ * @param data The attached data.
  * @return the message as a string
 */
 string PacketProtocol::parseData(uint16_t data_len, unsigned char *data) {
@@ -81,74 +82,50 @@ string PacketProtocol::parseData(uint16_t data_len, unsigned char *data) {
 }
 
 /**
- * set the packet array in the PacketProtocol object when one is provided
+ * Sets the Packet member field given a Packet array.
+ * @param data The attached data.
 */
 void PacketProtocol::setPacket(unsigned char *data) {
     memcpy(packet, data, MAX_PACKET_SIZE);
 }
 
+/**
+ * Sets a field in a packet array
+ * @param data_len Length of data to read.
+ * @param data The attached data.
+ * @return the message as a string
+*/
 void PacketProtocol::setPktField(uint32_t val, int numBits, int actualOffset) {
-    // cout << "packet_protocol.cpp::setPktField(): before writing to offset " << actualOffset << ": " << endl;
-    // cout << "packet_protocol.cpp::setPktField(): packet[0] originally contains " << static_cast<int>(packet[0]) << endl;
-    // cout << "packet_protocol.cpp::setPktField(): packet[1] originally contains " << static_cast<int>(packet[1]) << endl;
-    // cout << "packet_protocol.cpp::setPktField(): packet[2] originally contains " << static_cast<int>(packet[2]) << endl;
-    // cout << "packet_protocol.cpp::setPktField(): packet[3] originally contains " << static_cast<int>(packet[3]) << endl;
-    // cout << "packet_protocol.cpp::setPktField(): packet[4] originally contains " << static_cast<int>(packet[4]) << endl;
-    // cout << "packet_protocol.cpp::setPktField(): packet[5] originally contains " << static_cast<int>(packet[5]) << endl;
-    // cout << "packet_protocol.cpp::setPktField(): packet[6] originally contains " << static_cast<int>(packet[6]) << "\n\n" << endl;
-
-    // 1. Get the index of the packet array (block) that we want to start filling at
+    // First index in packet array to write to
     int block = actualOffset / 8;
-    cout << "\n\npacket_protocol.cpp::setPktField(): block: " << block << endl;
-
-    // 2. Get the index of the first bit that we want to start writing to
+    // Index in first block that we want to write to
     int start = actualOffset % 8;
-    cout << "packet_protocol.cpp::setPktField(): start: " << start << endl;
-
-    // 3. Get the total number of blocks that we need to write to, using ceiling division
     int totalBlocks = totalBlocks = (numBits / 8) + (numBits % 8 != 0);
-    cout << "packet_protocol.cpp::setPktField(): totalBlocks: " << totalBlocks << endl;
-
-    // Rightmost block to modify
     int lastBlock = block + totalBlocks - 1;
-    cout << "packet_protocol.cpp::setPktField(): lastBlock: " << lastBlock << endl;
 
-    // 4. Handle first block
-    uint32_t temp = val;
-
-    // Only keep bits that we want to use to fill the first block, and move them all the way to the right
-    // We only have to deal with this case if start isn't 0 (start is the index in the first block that we start writing to)
+    // Case 1: We start writing to the first block, but not from the beginning of the block
     if (start != 0) {
+        uint32_t temp = val;
         temp = val >> (numBits - (8 - start));
-        cout << "packet_protocol.cpp::setPktField(): FIRST BLOCK writing " << static_cast<int>(temp) << " to packet[" << block << "]" << endl;
-
         packet[block] = packet[block] | temp;
         totalBlocks--;
     }
 
-    // 5. Handle remaining blocks
-    // Bitshift to the left so that the rightmost 8 bits in val line up with the last block that we're writing to
-    cout << "packet_protocol.cpp::setPktField(): numBits: " << numBits << endl;
-    cout << "packet_protocol.cpp::setPktField(): numBits % 8: " << numBits % 8 << endl;
+    // Case 2: We start writing from the beginning of the block
+    // If we don't completely write to the last block, we shift val to the left so that its last 8 bits line up with the last block
     if ((numBits % 8) != 0) {
-        cout << "packet_protocol.cpp::setPktField(): shifting last block bits left by: " << (8 - (numBits % 8)) << endl;
-        val = val << (8 - (numBits % 8));
+        val <<= (8 - (numBits % 8));
     }
-    cout << "packet_protocol.cpp::setPktField(): val is: " << val << endl;
 
     uint32_t bitMask = 0x000000FF;
-
     int blocksWritten = 0;
 
+    // Write each block from highest index to lowest index in the packet array
     for (int i = totalBlocks; i > 0; i--) {
-        uint32_t valToWrite = ((val & bitMask) >> (8 * blocksWritten));
-        cout << "packet_protocol.cpp::setPktField(): writing " << static_cast<int>(valToWrite) << " to packet[" << lastBlock << "]" << endl;
-
-        // WHY does this work when we use valToWrite, but it doesn't work when we set it to packet[lastBlock] | valToWrite?
+        int bitsWritten = 8 * blocksWritten;
+        uint32_t valToWrite = ((val & (bitMask << (bitsWritten))) >> (bitsWritten));
         packet[lastBlock] = valToWrite;
-        // Move mask left by 8 to get to next block
         lastBlock--;
-        bitMask = bitMask << 8;
         blocksWritten++;
     }
 }
@@ -159,19 +136,7 @@ void PacketProtocol::setPktField(uint32_t val, int numBits, int actualOffset) {
 void PacketProtocol::setUserId(uint32_t user_id) {
     this->user_id = user_id;
     // TODO: set field inside packet
-
     cout << "packet_protocol.cpp::PacketProtocol::setUserId(): Setting user_id to: " << user_id << endl;
-
-    // uint8_t first_part_user_id = (user_id >> (3 + 8 + 8)) & 0xFF;
-    // uint8_t second_part_user_id = (user_id >> (3 + 8)) & 0xFF;
-    // uint8_t third_part_user_id = (user_id >> 3) & 0xFF;
-    // uint8_t fourth_part_user_id = (user_id & 0b111) & 0xFF;
-
-
-    // packet[0] = static_cast<char>(first_part_user_id);
-    // packet[1] = static_cast<char>(second_part_user_id);
-    // packet[2] = static_cast<char>(third_part_user_id);
-    // packet[3] = static_cast<char>((fourth_part_user_id << 5) | (packet[3] & 0b00011111));
 
     setPktField(user_id, 27, field_offsets[0]);
 }
@@ -181,7 +146,6 @@ void PacketProtocol::setOpId(uint8_t op_id) {
     // TODO: set field inside packet
     cout << "packet_protocol.cpp::PacketProtocol::setOpId(): Setting op_id to: " << static_cast<int>(op_id) << endl;
 
-    // packet[3] = static_cast<char>((packet[3] & 0b11100000) | op_id);
     setPktField(op_id, 5, field_offsets[1]);
 }
 
@@ -190,7 +154,6 @@ void PacketProtocol::setResult(uint8_t result) {
     // TODO: set field inside packet
     cout << "packet_protocol.cpp::PacketProtocol::setResult(): Setting result to: " << static_cast<int>(result) << endl;
 
-    // packet[4] = static_cast<char>(result & 0xFF);
     setPktField(result, 8, field_offsets[2]);
 }
 
@@ -198,13 +161,6 @@ void PacketProtocol::setDataLen(uint16_t data_len) {
     this->data_len = data_len;
     // TODO: set field inside packet
     cout << "packet_protocol.cpp::PacketProtocol::setDataLen(): Setting data_len to: " << static_cast<int>(data_len) << endl;
-
-    // uint8_t first_part_data = (data_len >> 8) & 0xFF;
-    // uint8_t second_part_data = data_len & 0xFF;
-
-    // // explicit type conversion just in case, since packet is a char array
-    // packet[5] = static_cast<char>(first_part_data);
-    // packet[6] = static_cast<char>(second_part_data);
 
     setPktField(data_len, 16, field_offsets[3]);
 }
@@ -214,8 +170,6 @@ void PacketProtocol::setData(uint16_t data_len, unsigned char *data) {
 
     // this also sets this->data_len = data_len
     this->setDataLen(data_len);
-
-    // TODO: set field inside packet
 
     // we only set data in packet when it is not null, to prevent dereferencing a nullptr
     if (data != nullptr) {
