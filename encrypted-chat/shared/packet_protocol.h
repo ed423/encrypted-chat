@@ -2,9 +2,10 @@
 
 #include "util.h"
 
-using namespace std;
+// using namespace std;
 
 #define MAX_PACKET_SIZE 1480
+#define HEADER_SIZE 56
 
 /**
  * Defines the structure of the network packet. Every time we send a PacketProtocol, 
@@ -19,8 +20,8 @@ private:
     uint16_t data_len; // 16 bits; we send over the header size + data_len
     uint8_t *data;
 
-    uint8_t packet[MAX_PACKET_SIZE]; // this is what we send over
     int field_offsets[5] = { 0, 27, 32, 40, 56 };
+    uint8_t packet[MAX_PACKET_SIZE]; // this is what we send over
 
     void initPacket(uint32_t user_id, uint8_t op_id, uint8_t result, uint16_t data_len, uint8_t *data);
     void setPktField(uint32_t val, int numBits, int actualOffset);

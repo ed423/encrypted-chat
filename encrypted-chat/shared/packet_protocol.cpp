@@ -4,7 +4,7 @@
 
 #include "packet_protocol.h"
 
-using namespace std;
+// using namespace std;
 
 /**
  * Default Constructor
@@ -64,31 +64,31 @@ void PacketProtocol::parsePacket() {
  * Helper function to print packet values in the console.
 */
 void PacketProtocol::dumpPacket() {
-    cout << "//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
-    cout << "// PacketProtocol::dumpPacket():\n";
-    cout << "//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
+    std::cout << "//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
+    std::cout << "// PacketProtocol::dumpPacket():\n";
+    std::cout << "//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
     int pkt_size = 27 + 5 + 8 + 16 + data_len;
 
     for (int i = 0; i < pkt_size; i++) {
-        bitset<8> cur_blk = packet[i];
-        cout << "packet[" << setw(2) << right << setfill('0') << i << "]: " << cur_blk << " | " << getChar(packet[i]) << " \n";
+        std::bitset<8> cur_blk = packet[i];
+        std::cout << "packet[" << std::setw(2) << std::right << std::setfill('0') << i << "]: " << cur_blk << " | " << getChar(packet[i]) << " \n";
     }
-    cout << "//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
+    std::cout << "//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 }
 
 /**
  * Helper function to print packet fields in the console.
 */
 void PacketProtocol::printFields() {
-    cout << "//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
-    cout << "// printFields(): PacketProtocol:\n";
-    cout << "//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
+    std::cout << "//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
+    std::cout << "// printFields(): PacketProtocol:\n";
+    std::cout << "//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
     << "      User ID: " << this->getUserId() << "\n"
     << "      Operation Code: " << static_cast<Operation>(this->getOpId()) << "\n"
     << "      Result Code: " << static_cast<ResultCodes>(this->getResult()) << "\n"
     << "      Data Length: " << this->getDataLen() << "\n"
-    << "      Data: " << (this->getData() ? this->getData() : " ") << endl;
-    cout << "//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n" << endl;
+    << "      Data: " << (this->getData() ? this->getData() : " ") << std::endl;
+    std::cout << "//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n" << std::endl;
 }
 
 /**
