@@ -1,0 +1,9 @@
+#include <DynamoDBClient.h>
+#include <aws/core/Aws.h>
+#include <aws/dynamodb/DynamoDBClient.h>
+#include <aws/dynamodb/model/AttributeDefinition.h>
+#include <aws/dynamodb/model/CreateTableRequest.h>
+#include <aws/dynamodb/model/KeySchemaElement.h>
+#include <aws/dynamodb/model/ProvisionedThroughput.h>
+#include <aws/dynamodb/model/ScalarAttributeType.h>
+#include <iostream>
