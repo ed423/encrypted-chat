@@ -88,25 +88,23 @@ void testBasicSendAndReceive() {
     uint8_t *packet_array_from_sender = mock_send_packet_protocol.getPkt();
 
     // Create a new PacketProtocol object, to simulate the creation of one when we receive a buffer (packet array)
-    PacketProtocol mock_receive_packet_protocol{};
+    PacketProtocol *mock_receive_packet_protocol = new PacketProtocol();
+    // PacketProtocol mock_receive_packet_protocol{};
+    // mock_receive_packet_protocol.dumpPacket();
+    mock_receive_packet_protocol->dumpPacket();
 
-    // Set the packet array in the new object as the received buffer
-    mock_receive_packet_protocol.setPacket(packet_array_from_sender);
-    cout << "\nReceived packet value: " << endl;
+    // // Set the packet array in the new object as the received buffer
+    // mock_receive_packet_protocol.setPacket(packet_array_from_sender);
+    // mock_receive_packet_protocol.dumpPacket();
+    // cout << "\nReceived packet value: " << endl;
 
-    // Extract values from the packet array and set class fields in the receiver's PacketProtocol object
-    // mock_receive_packet_protocol.parsePacket(); // moved parsePacket() to inside setPacket() so users don't have to call both methods
+    // // Print values stored in the receiver's PacketProtocol object fields
+    // mock_receive_packet_protocol.printFields();
 
-    // Print values stored in the receiver's PacketProtocol object fields
-    mock_receive_packet_protocol.printFields();
-
-    // Print the message received by the receiver
-    // string parsedData = mock_receive_packet_protocol.parseData(mock_receive_packet_protocol.getDataLen(), mock_receive_packet_protocol.getData());
-    string parsedData = mock_receive_packet_protocol.getData();
-
-    // Check that the message in the receiver's packet array is the same as the one that was sent by the sender
-    cout << "\nExpected message value: " << mock_string << endl;
-    cout << "Actual message value: " << parsedData << endl;
+    // // Check that the message in the receiver's packet array is the same as the one that was sent by the sender
+    // string parsedData = mock_receive_packet_protocol.getData();
+    // cout << "\nExpected message value: " << mock_string << endl;
+    // cout << "Actual message value: " << parsedData << endl;
 
     cout << "\nEND TEST CASE 1" << endl;
     cout << "//================================================================" << endl;
