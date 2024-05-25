@@ -69,17 +69,17 @@ void PacketProtocol::dumpPacket() {
     cout << "//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n" << endl;
 }
 
-/**
- * Parses a message given a pointer to its first character, for a given number of bytes
- * @param data_len Length of data to read.
- * @param data The attached data.
- * @return the message as a string
-*/
-string PacketProtocol::parseData(uint16_t data_len, unsigned char *data) {
-    string parsedString(reinterpret_cast<char*>(data), data_len);
+// /**
+//  * Parses a message given a pointer to its first character, for a given number of bytes
+//  * @param data_len Length of data to read.
+//  * @param data The attached data.
+//  * @return the message as a string
+// */
+// string PacketProtocol::parseData(uint16_t data_len, unsigned char *data) {
+//     string parsedString(reinterpret_cast<char*>(data), data_len);
 
-    return parsedString;
-}
+//     return parsedString;
+// }
 
 /**
  * Sets the Packet member field given a Packet array.
@@ -136,7 +136,7 @@ void PacketProtocol::setPktField(uint32_t val, int numBits, int actualOffset) {
 void PacketProtocol::setUserId(uint32_t user_id) {
     this->user_id = user_id;
     // TODO: set field inside packet
-    cout << "packet_protocol.cpp::PacketProtocol::setUserId(): Setting user_id to: " << user_id << endl;
+    // cout << "packet_protocol.cpp::PacketProtocol::setUserId(): Setting user_id to: " << user_id << endl;
 
     setPktField(user_id, 27, field_offsets[0]);
 }
@@ -144,7 +144,7 @@ void PacketProtocol::setUserId(uint32_t user_id) {
 void PacketProtocol::setOpId(uint8_t op_id) {
     this->op_id = op_id;
     // TODO: set field inside packet
-    cout << "packet_protocol.cpp::PacketProtocol::setOpId(): Setting op_id to: " << static_cast<int>(op_id) << endl;
+    // cout << "packet_protocol.cpp::PacketProtocol::setOpId(): Setting op_id to: " << static_cast<int>(op_id) << endl;
 
     setPktField(op_id, 5, field_offsets[1]);
 }
@@ -152,7 +152,7 @@ void PacketProtocol::setOpId(uint8_t op_id) {
 void PacketProtocol::setResult(uint8_t result) {
     this->result = result;
     // TODO: set field inside packet
-    cout << "packet_protocol.cpp::PacketProtocol::setResult(): Setting result to: " << static_cast<int>(result) << endl;
+    // cout << "packet_protocol.cpp::PacketProtocol::setResult(): Setting result to: " << static_cast<int>(result) << endl;
 
     setPktField(result, 8, field_offsets[2]);
 }
@@ -160,7 +160,7 @@ void PacketProtocol::setResult(uint8_t result) {
 void PacketProtocol::setDataLen(uint16_t data_len) {
     this->data_len = data_len;
     // TODO: set field inside packet
-    cout << "packet_protocol.cpp::PacketProtocol::setDataLen(): Setting data_len to: " << static_cast<int>(data_len) << endl;
+    // cout << "packet_protocol.cpp::PacketProtocol::setDataLen(): Setting data_len to: " << static_cast<int>(data_len) << endl;
 
     setPktField(data_len, 16, field_offsets[3]);
 }
@@ -197,6 +197,6 @@ uint16_t PacketProtocol::getDataLen() {
     return data_len;
 }
 
-uint8_t *PacketProtocol::getData() {
-    return data;
+char *PacketProtocol::getData() {
+    return (char *)data;
 }

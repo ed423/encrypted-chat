@@ -6,12 +6,17 @@
 
 using namespace std;
 
+void testSendAndReceive();
+
 int main() {
-
     cout << "packet_protocol_test.cpp::main(): BEGINNING TEST SUITE" << endl;
+    testSendAndReceive();
+    return 0;
+}
 
+void testSendAndReceive() {
     cout << "\n//================================================================" << endl;
-    cout << "TEST CASE 1: Simulating a packet being sent from the client to the server, without any socket operations\n" << endl;
+    cout << "testSendAndReceive(): TEST CASE 1: Simulating a packet being sent from the client to the server, without any socket operations\n" << endl;
 
     // Create a PacketProtocol object to simulate one that is created by a sender (client)
     PacketProtocol mock_send_packet_protocol{};
@@ -51,7 +56,8 @@ int main() {
     mock_receive_packet_protocol.dumpPacket();
 
     // Print the message received by the receiver
-    string parsedData = mock_receive_packet_protocol.parseData(mock_receive_packet_protocol.getDataLen(), mock_receive_packet_protocol.getData());
+    // string parsedData = mock_receive_packet_protocol.parseData(mock_receive_packet_protocol.getDataLen(), mock_receive_packet_protocol.getData());
+    string parsedData = mock_receive_packet_protocol.getData();
 
     // Check that the message in the receiver's packet array is the same as the one that was sent by the sender
     cout << "\nExpected message value: " << mock_string << endl;
@@ -59,6 +65,4 @@ int main() {
 
     cout << "\nEND TEST CASE 1" << endl;
     cout << "//================================================================" << endl;
-    
-    return 0;
 }

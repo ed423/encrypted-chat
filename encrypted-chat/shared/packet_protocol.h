@@ -29,7 +29,7 @@ public:
 
     void parsePacket();
     void setPacket(unsigned char *data);
-    string parseData(uint16_t data_len, unsigned char *data);
+    // string parseData(uint16_t data_len, unsigned char *data);
     void dumpPacket(); // helper for testing
     
     //----------------------
@@ -47,5 +47,5 @@ public:
     uint8_t getOpId();
     uint8_t getResult();
     uint16_t getDataLen();
-    uint8_t *getData();
+    char *getData();
 };
