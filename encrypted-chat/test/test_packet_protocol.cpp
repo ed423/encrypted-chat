@@ -1,4 +1,6 @@
 #include <iostream>
+// #include <openssl/ssl.h>
+// #include <openssl/err.h>
 #include "../shared/packet_protocol.h"
 
 // bad, remove later
@@ -10,7 +12,7 @@ void testSetPktField();
 void testBasicSendAndReceive();
 
 int main() {
-    cout << "packet_protocol_test.cpp::main(): BEGINNING TEST SUITE" << endl;
+    cout << "test_packet_protocol.cpp::main(): BEGINNING TEST SUITE" << endl;
     // comment out what you're not currently testing - easier to test :)
     testBasicSendAndReceive();
     // testSetPktField();
