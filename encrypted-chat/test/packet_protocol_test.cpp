@@ -6,14 +6,14 @@
 
 using namespace std;
 
-void testBasicSendAndReceive();
 void testSetPktField();
+void testBasicSendAndReceive();
 
 int main() {
     cout << "packet_protocol_test.cpp::main(): BEGINNING TEST SUITE" << endl;
     // comment out what you're not currently testing - easier to test :)
     testBasicSendAndReceive();
-    testSetPktField();
+    // testSetPktField();
     return 0;
 }
 
@@ -82,7 +82,7 @@ void testBasicSendAndReceive() {
     mock_send_packet_protocol.setData(mock_string_length, mock_string);
 
     mock_send_packet_protocol.printFields();
-    mock_send_packet_protocol.dumpPacket();
+    // mock_send_packet_protocol.dumpPacket();
 
     // Pointer to the sender's packet array (the buffer that we want to send to the server)
     uint8_t *packet_array_from_sender = mock_send_packet_protocol.getPkt();

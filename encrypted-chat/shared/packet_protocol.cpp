@@ -10,7 +10,10 @@ using namespace std;
  * Default Constructor
 */
 PacketProtocol::PacketProtocol() {
-    // initPacket(-1, -1, 0, 0, nullptr);
+    for (int i = 0; i < MAX_PACKET_SIZE; i++) {
+        packet[i] = 0x0;
+    }
+
     initPacket(0, 0, 0, 0, nullptr);
 }
 
@@ -23,6 +26,10 @@ PacketProtocol::PacketProtocol() {
  * @param data The attached data.
 */
 PacketProtocol::PacketProtocol(uint32_t user_id, uint8_t op_id, uint8_t result, uint16_t data_len, uint8_t *data) {
+    for (int i = 0; i < MAX_PACKET_SIZE; i++) {
+        packet[i] = 0x0;
+    }
+
     initPacket(user_id, op_id, result, data_len, data);
 }
 
@@ -46,7 +53,6 @@ void PacketProtocol::initPacket(uint32_t user_id, uint8_t op_id, uint8_t result,
  * Parses values from a Packet array and sets member fields accordingly.
 */
 void PacketProtocol::parsePacket() {
-    // TODO: merge with setPacket()?
     this->user_id = 0x00000000 | ((uint32_t)packet[3] >> 5) | ((uint32_t)packet[2] << (8 - 5)) | ((uint32_t)packet[1] << (8 - 5 + 8)) | ((uint32_t)packet[0] << (8 - 5 + 16));
     this->op_id = packet[3] & 0b00011111;
     this->result = packet[4];
@@ -58,28 +64,32 @@ void PacketProtocol::parsePacket() {
  * Helper function to print packet values in the console.
 */
 void PacketProtocol::dumpPacket() {
-    cout << "\n//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
-    cout << "   PacketProtocol:\n"
+    cout << "//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
+    cout << "// PacketProtocol::dumpPacket():\n";
+    cout << "//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
+    int pkt_size = 27 + 5 + 8 + 16 + data_len;
+
+    for (int i = 0; i < pkt_size; i++) {
+        bitset<8> cur_blk = packet[i];
+        cout << "packet[" << setw(2) << right << setfill('0') << i << "]: " << cur_blk << " | " << getChar(packet[i]) << " \n";
+    }
+    cout << "//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
+}
+
+/**
+ * Helper function to print packet fields in the console.
+*/
+void PacketProtocol::printFields() {
+    cout << "//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
+    cout << "// printFields(): PacketProtocol:\n";
+    cout << "//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
     << "      User ID: " << this->getUserId() << "\n"
     << "      Operation Code: " << static_cast<Operation>(this->getOpId()) << "\n"
     << "      Result Code: " << static_cast<ResultCodes>(this->getResult()) << "\n"
     << "      Data Length: " << this->getDataLen() << "\n"
-    << "      Data: " << this->getData() << endl;
-    // TODO: print data in a readable format (need a helper)
+    << "      Data: " << (this->getData() ? this->getData() : " ") << endl;
     cout << "//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n" << endl;
 }
-
-// /**
-//  * Parses a message given a pointer to its first character, for a given number of bytes
-//  * @param data_len Length of data to read.
-//  * @param data The attached data.
-//  * @return the message as a string
-// */
-// string PacketProtocol::parseData(uint16_t data_len, unsigned char *data) {
-//     string parsedString(reinterpret_cast<char*>(data), data_len);
-
-//     return parsedString;
-// }
 
 /**
  * Sets the Packet member field given a Packet array.
@@ -87,6 +97,7 @@ void PacketProtocol::dumpPacket() {
 */
 void PacketProtocol::setPacket(unsigned char *data) {
     memcpy(packet, data, MAX_PACKET_SIZE);
+    parsePacket();
 }
 
 /**
@@ -124,7 +135,7 @@ void PacketProtocol::setPktField(uint32_t val, int numBits, int actualOffset) {
     for (int i = totalBlocks; i > 0; i--) {
         int bitsWritten = 8 * blocksWritten;
         uint32_t valToWrite = ((val & (bitMask << (bitsWritten))) >> (bitsWritten));
-        packet[lastBlock] = valToWrite;
+        packet[lastBlock] |= valToWrite;
         lastBlock--;
         blocksWritten++;
     }
@@ -135,40 +146,26 @@ void PacketProtocol::setPktField(uint32_t val, int numBits, int actualOffset) {
 //-------------------
 void PacketProtocol::setUserId(uint32_t user_id) {
     this->user_id = user_id;
-    // TODO: set field inside packet
-    // cout << "packet_protocol.cpp::PacketProtocol::setUserId(): Setting user_id to: " << user_id << endl;
-
     setPktField(user_id, 27, field_offsets[0]);
 }
 
 void PacketProtocol::setOpId(uint8_t op_id) {
     this->op_id = op_id;
-    // TODO: set field inside packet
-    // cout << "packet_protocol.cpp::PacketProtocol::setOpId(): Setting op_id to: " << static_cast<int>(op_id) << endl;
-
     setPktField(op_id, 5, field_offsets[1]);
 }
 
 void PacketProtocol::setResult(uint8_t result) {
     this->result = result;
-    // TODO: set field inside packet
-    // cout << "packet_protocol.cpp::PacketProtocol::setResult(): Setting result to: " << static_cast<int>(result) << endl;
-
     setPktField(result, 8, field_offsets[2]);
 }
 
 void PacketProtocol::setDataLen(uint16_t data_len) {
     this->data_len = data_len;
-    // TODO: set field inside packet
-    // cout << "packet_protocol.cpp::PacketProtocol::setDataLen(): Setting data_len to: " << static_cast<int>(data_len) << endl;
-
     setPktField(data_len, 16, field_offsets[3]);
 }
 
 void PacketProtocol::setData(uint16_t data_len, unsigned char *data) {
     this->data = data;
-
-    // this also sets this->data_len = data_len
     this->setDataLen(data_len);
 
     // we only set data in packet when it is not null, to prevent dereferencing a nullptr
@@ -199,4 +196,8 @@ uint16_t PacketProtocol::getDataLen() {
 
 char *PacketProtocol::getData() {
     return (char *)data;
+}
+
+uint8_t *PacketProtocol::getPkt() {
+    return &packet[0];
 }
